@@ -13,6 +13,10 @@ def get_random_word():
 
 def display_game_state(mistakes, secret_word, guessed_letters):
     """Display the current snowman stage and hidden word."""
+    print("\n" + "=" * 30)
+    print("Snowman Meltdown")
+    print("=" * 30)
+
     print(STAGES[mistakes])
 
     display_word = ""
@@ -23,9 +27,10 @@ def display_game_state(mistakes, secret_word, guessed_letters):
         else:
             display_word += "_ "
 
-    print("Word:", display_word)
-    print("Mistakes:", mistakes)
-    print()
+    print("Word:           ", display_word)
+    print("Mistakes:       ", mistakes, "/", len(STAGES) - 1)
+    print("Guessed letters:", ", ".join(guessed_letters))
+    print("=" * 30)
 
 
 def is_word_guessed(secret_word, guessed_letters):
@@ -37,8 +42,28 @@ def is_word_guessed(secret_word, guessed_letters):
     return True
 
 
+def get_valid_guess(guessed_letters):
+    """Ask the user for a valid single alphabetical character."""
+    while True:
+        guess = input("Guess a letter: ").lower().strip()
+
+        if len(guess) != 1:
+            print("Please enter exactly one letter.")
+            continue
+
+        if not guess.isalpha():
+            print("Please enter only alphabetical characters.")
+            continue
+
+        if guess in guessed_letters:
+            print("You already guessed that letter.")
+            continue
+
+        return guess
+
+
 def play_game():
-    """Start the Snowman Meltdown game."""
+    """Start one round of Snowman Meltdown."""
     secret_word = get_random_word()
     guessed_letters = []
     mistakes = 0
@@ -52,12 +77,7 @@ def play_game():
     ):
         display_game_state(mistakes, secret_word, guessed_letters)
 
-        guess = input("Guess a letter: ").lower()
-
-        if guess in guessed_letters:
-            print("You already guessed that letter.")
-            continue
-
+        guess = get_valid_guess(guessed_letters)
         guessed_letters.append(guess)
 
         if guess in secret_word:
@@ -75,5 +95,29 @@ def play_game():
         print("The secret word was:", secret_word)
 
 
+def ask_for_replay():
+    """Ask the user whether they want to play again."""
+    while True:
+        answer = input("Do you want to play again? (y/n): ").lower().strip()
+
+        if answer == "y":
+            return True
+
+        if answer == "n":
+            return False
+
+        print("Please enter y or n.")
+
+
+def main():
+    """Run the game and handle replay."""
+    while True:
+        play_game()
+
+        if not ask_for_replay():
+            print("Thanks for playing!")
+            break
+
+
 if __name__ == "__main__":
-    play_game()
+    main()
